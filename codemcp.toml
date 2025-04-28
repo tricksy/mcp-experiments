@@ -1,0 +1,83 @@
+format = ["./run_format.sh"]
+test = ["./run_test.sh"]
+
+# 開発環境関連のコマンド
+dev = ["npm run dev"]
+build = ["npm run build"]
+watch = ["npm run watch"]
+
+# デプロイメント関連のコマンド
+deploy = ["./deploy.sh"]
+deploy_staging = ["./deploy.sh staging"]
+deploy_production = ["./deploy.sh production"]
+
+# データ管理コマンド
+backup_data = ["./scripts/backup_data.sh"]
+restore_data = ["./scripts/restore_data.sh"]
+migrate_data = ["./scripts/migrate_data.sh"]
+
+# ツール関連のコマンド
+lint = ["npm run lint"]
+lint_fix = ["npm run lint:fix"]
+typecheck = ["npm run typecheck"]
+
+# デザイン関連のコマンド
+css_build = ["npm run css:build"]
+css_watch = ["npm run css:watch"]
+design_sync = ["./scripts/design_sync.sh"]  # Figmaなどからデザインアセットを同期
+design_export = ["./scripts/design_export.sh"]  # デザインアセットをエクスポート
+design_audit = ["./scripts/design_audit.sh"]  # デザインの一貫性チェック
+design_tokens = ["./scripts/generate_design_tokens.sh"]  # デザイントークンの生成
+
+# ドキュメント関連のコマンド
+docs_generate = ["./scripts/generate_docs.sh"]
+docs_serve = ["python -m http.server 8000 --directory ./docs"]
+
+# 監視・ロギング関連のコマンド
+logs = ["./scripts/fetch_logs.sh"]
+monitor = ["./scripts/monitor.sh"]
+
+# プロジェクト設定
+[project]
+name = "mcp-experiments"
+description = "Model Context Protocol実験プロジェクト"
+version = "0.1.0"
+author = "miyoshi"
+
+# 環境変数設定
+[env]
+development = { API_URL = "http://localhost:3000/api", DEBUG = true }
+staging = { API_URL = "https://staging-api.example.com", DEBUG = true }
+production = { API_URL = "https://api.example.com", DEBUG = false }
+
+# 依存関係
+[dependencies]
+required = ["nodejs >= 14.0.0", "npm >= 7.0.0"]
+optional = ["python >= 3.8.0"]
+
+# GAS（Google Apps Script）関連の設定
+[gas]
+project_id = "your-gas-project-id"
+script_id = "your-script-id"
+deploy_command = "clasp push && clasp deploy"
+
+# デザインシステム設定
+[design]
+theme = "default"
+color_scheme = "light"
+frameworks = ["material-design"]
+design_tokens_path = "./src/styles/tokens"
+css_output_path = "./dist/css"
+
+# デザインリソース
+[design.resources]
+figma_file_id = "your-figma-file-id"
+asset_dir = "./src/assets"
+icons_dir = "./src/assets/icons"
+fonts_dir = "./src/assets/fonts"
+
+# デザインツール連携
+[design.tools]
+figma_sync_enabled = true
+sketch_sync_enabled = false
+adobe_xd_sync_enabled = false

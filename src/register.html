@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>データ登録・編集</title>
+
+  <!-- ファビコン設定 -->
+  <link rel="icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- メタ情報 -->
+  <meta name="description" content="Google Apps Scriptを利用したデータ登録・編集ツール">
+  <meta property="og:title" content="データ登録・編集">
+  <meta property="og:description" content="Google Apps Scriptを利用したデータ登録・編集ツール">
+  <meta property="og:type" content="website">
+
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap">
+  <style>
+    :root {
+      /* SmartHRブランドカラー - 正確な色値で定義 */
+      --primary-color: #00c4cc;
+      /* SmartHR Blue - プライマリーブランドカラー */
+      --primary-dark: #0f7f85;
+      /* Aqua04 - テキストに適した暗め色 */
+      --primary-light: #d4f4f5;
+      /* Aqua01 - 背景などに適した薄め色 */
+      --primary-mid: #12abb1;
+      /* Aqua03 - 中間色 */
+
+      --secondary-color: #23221f;
+      /* Black - テキストに最適 */
+      --secondary-light: #4e4c49;
+      /* Stone04 - 薄めのテキスト色 */
+
+      --accent-color: #ff9900;
+      /* Orange - アクセントカラー */
+      --accent-light: #ffd74a;
+      /* Sunlight03 - 薄めのアクセント */
+      --accent-dark: #f56121;
+      /* Sunlight04 - 濃いめのアクセント */
+
+      --danger-color: #ec5a55;
+      /* Momiji03 - 警告色 */
+      --danger-light: #ffe7e5;
+      /* Momiji01 - 薄い警告色 */
+      --danger-dark: #a53f3f;
+      /* Momiji04 - 濃い警告色 */
+
+      /* グレースケール */
+      --white: #ffffff;
+      --gray-100: #f8f7f6;
+      /* Stone01 - 最も薄いグレー、背景色 */
+      --gray-200: #edebe6;
+      /* Stone02 - 薄いグレー、区切り線など */
+      --gray-300: #aaa69f;
+      /* Stone03 - 中間グレー、薄いテキストなど */
+      --gray-400: #4e4c49;
+      /* Stone04 - 濃いグレー、テキスト */
+      --gray-800: #23221f;
+      /* Black - 最も濃いグレー、重要テキスト */
+
+      /* サポートカラー */
+      --success-color: #3dcc65;
+      /* Grass03 - 成功表示 */
+      --success-light: #e6f2c8;
+      /* Grass01 - 薄い成功表示 */
+      --info-color: #32b7f0;
+      /* Sky03 - 情報表示 */
+      --info-light: #ddf2fb;
+      /* Sky01 - 薄い情報表示 */
+
+      /* UI要素 */
+      --border-radius: 6px;
+      --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+      --transition: all 0.2s ease-in-out;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: var(--gray-100);
+      color: var(--secondary-color);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: var(--secondary-color);
+      margin-top: 0;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    /* タブデザイン */
+    .tabs-container {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .tab-group {
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      transition: var(--transition);
+      flex: 1;
+      min-width: 300px;
+      border: 1px solid var(--gray-200);
+    }
+
+    .tab-group:hover {
+      box-shadow: var(--box-shadow-hover);
+    }
+
+    .tab-group-title {
+      font-weight: 500;
+      padding: 10px 16px;
+      color: var(--secondary-color);
+      background-color: var(--gray-200);
+      font-size: 14px;
+    }
+
+    .tab {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px;
+      background-color: var(--white);
+      border: none;
+    }
+
+    .tab button {
+      background-color: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      outline: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      transition: var(--transition);
+      font-size: 14px;
+      border-radius: var(--border-radius);
+      color: var(--gray-400);
+      font-weight: 500;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .tab button:hover {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      border-color: var(--primary-color);
+    }
+
+    .tab button.active {
+      background-color: var(--primary-color);
+      color: var(--white);
+      box-shadow: 0 2px 5px rgba(0, 196, 204, 0.3);
+      border-color: var(--primary-color);
+    }
+
+    .tabcontent {
+      display: none;
+      padding: 24px;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--gray-200);
+      background-color: var(--white);
+      box-shadow: var(--box-shadow);
+      height: calc(100vh - 200px);
+      overflow-y: auto;
+      margin-bottom: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* テーブルデザイン */
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: var(--box-shadow);
+      border: 1px solid var(--gray-200);
+    }
+
+    th,
+    td {
+      border: none;
+      padding: 14px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: var(--primary-color);
+      color: var(--white);
+      font-weight: 500;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    tr {
+      border-bottom: 1px solid var(--gray-200);
+      transition: var(--transition);
+    }
+
+    tr:last-child {
+      border-bottom: none;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--gray-100);
+    }
+
+    tr:hover {
+      background-color: var(--primary-light);
+    }
+
+    /* ボタンデザイン */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      font-size: 14px;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.3px;
+    }
+
+    button.action {
+      background-color: var(--white);
+      color: var(--secondary-color);
+      border: 1px solid var(--gray-300);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    button.action:hover {
+      background-color: var(--gray-100);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      border-color: var(--gray-400);
+    }
+
+    button.action:active {
+      background-color: var(--gray-200);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+    button.create {
+      background-color: var(--primary-color);
+      color: var(--white);
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 196, 204, 0.3);
+    }
+
+    button.create:hover {
+      background-color: var(--primary-mid);
+      box-shadow: 0 3px 8px rgba(0, 196, 204, 0.4);
+    }
+
+    button.create:active {
+      background-color: var(--primary-dark);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+    button.delete {
+      background-color: var(--white);
+      color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+    }
+
+    button.delete:hover {
+      background-color: var(--danger-color);
+      color: var(--white);
+      box-shadow: 0 3px 8px rgba(236, 90, 85, 0.4);
+    }
+
+    button.delete:active {
+      background-color: var(--danger-dark);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+      background-color: var(--gray-200) !important;
+      color: var(--gray-400) !important;
+      border-color: var(--gray-300) !important;
+    }
+
+    /* フォーム要素 */
+    .preview-img {
+      max-width: 120px;
+      max-height: 120px;
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--gray-200);
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .preview-img:hover {
+      transform: scale(1.05);
+      box-shadow: var(--box-shadow);
+      border-color: var(--primary-color);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-color);
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      box-sizing: border-box;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--border-radius);
+      font-family: inherit;
+      font-size: 14px;
+      transition: var(--transition);
+      background-color: var(--white);
+      color: var(--secondary-color);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 196, 204, 0.2);
+    }
+
+    .form-control:hover:not(:focus) {
+      border-color: var(--gray-400);
+    }
+
+    .form-control::placeholder {
+      color: var(--gray-300);
+    }
+
+    .form-control:disabled {
+      background-color: var(--gray-100);
+      color: var(--gray-400);
+      cursor: not-allowed;
+    }
+
+    select.form-control {
+      height: 44px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234e4c49' d='M6 8.825l-4.592-4.59L2.825 3l3.175 3.175L9.175 3l1.417 1.235z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* アラート */
+    .alert {
+      padding: 16px;
+      margin-bottom: 24px;
+      border-radius: var(--border-radius);
+      border-left: 4px solid transparent;
+      background-color: var(--white);
+      box-shadow: var(--box-shadow);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      border-left-color: var(--success-color);
+      background-color: var(--success-light);
+      color: var(--secondary-color);
+    }
+
+    .alert-danger {
+      border-left-color: var(--danger-color);
+      background-color: var(--danger-light);
+      color: var(--danger-dark);
+    }
+
+    .alert-info {
+      border-left-color: var(--info-color);
+      background-color: var(--info-light);
+      color: var(--secondary-color);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* モーダルデザイン */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(35, 34, 31, 0.7);
+      padding-top: 0;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: var(--white);
+      margin: 5% auto;
+      padding: 28px;
+      border-radius: 12px;
+      border: 1px solid var(--gray-200);
+      width: 90%;
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transform: translateY(-30px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal.show {
+      opacity: 1;
+      display: block;
+    }
+
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .close {
+      color: var(--gray-400);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+      line-height: 1;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: var(--secondary-color);
+      text-decoration: none;
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 20px;
+    }
+
+    .image-preview {
+      display: inline-block;
+      margin: 8px 0;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .image-preview:hover {
+      transform: scale(1.03);
+      border-color: var(--primary-color);
+    }
+
+    /* 画像プレビュー拡大モーダル */
+    #imagePreviewModal {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(35, 34, 31, 0.9);
+      overflow: auto;
+      animation: modalFadeIn 0.3s;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    #imagePreviewModal img {
+      margin: auto;
+      display: block;
+      max-width: 90%;
+      max-height: 90vh;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      animation: imageZoomIn 0.4s;
+    }
+
+    @keyframes imageZoomIn {
+      from {
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* 検索フィールド */
+    .search-box {
+      padding: 14px;
+      margin: 16px 0 24px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--border-radius);
+      font-size: 15px;
+      background-color: var(--white);
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(0, 196, 204, 0.15);
+    }
+
+    /* レスポンシブ対応 */
+    @media screen and (max-width: 768px) {
+      .tabs-container {
+        flex-direction: column;
+      }
+
+      .tab-group {
+        width: 100%;
+        min-width: 100%;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .modal-content {
+        width: 95%;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .tabcontent {
+        padding: 16px;
+        height: calc(100vh - 150px);
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+
+      th,
+      td {
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+
+      .form-control {
+        padding: 10px;
+      }
+
+      .preview-img {
+        max-width: 100px;
+        max-height: 100px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>データ登録・編集</h1>
+
+  <div id="notification" class="alert hidden"></div>
+
+  <input type="text" id="searchBox" class="search-box" placeholder="検索..." onkeyup="searchData()">
+
+  <!-- データ操作ボタン -->
+  <div class="btn-group">
+    <button class="action" onclick="exportData()">データをエクスポート</button>
+    <button class="action" onclick="showImportModal()">データをインポート</button>
+  </div>
+
+  <div class="tabs-container">
+    <!-- 基本タブグループ -->
+    <div class="tab-group">
+      <div class="tab-group-title">基本シート</div>
+      <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, 'configTab')">初期設定</button>
+        <button class="tablinks" onclick="openTab(event, 'titleTab')">返答タイトル</button>
+        <button class="tablinks" onclick="openTab(event, 'conditionTab')">返答条件</button>
+        <button class="tablinks" onclick="openTab(event, 'contentTab')">返答内容</button>
+        <button class="tablinks" onclick="openTab(event, 'buttonTab')">ボタン設定</button>
+      </div>
+    </div>
+
+    <!-- 応用タブグループ -->
+    <div class="tab-group">
+      <div class="tab-group-title">応用シート</div>
+      <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'flagConditionTab')">フラグ条件</button>
+        <button class="tablinks" onclick="openTab(event, 'flagChangeTab')">フラグ変更</button>
+        <button class="tablinks" onclick="openTab(event, 'imageGenTab')">画像生成</button>
+        <button class="tablinks" onclick="openTab(event, 'variableTab')">変数</button>
+        <button class="tablinks" onclick="openTab(event, 'scriptTab')">スクリプト</button>
+        <button class="tablinks" onclick="openTab(event, 'trophyTab')">トロフィ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 初期設定タブ -->
+  <div id="configTab" class="tabcontent" style="display: block;">
+    <h2>初期設定</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addChapter()">章を追加</button>
+      <button class="action" onclick="addLineAccount()">LINEアカウントを追加</button>
+      <button class="create" onclick="saveConfig()">保存</button>
+    </div>
+
+    <div class="form-group">
+      <h3>章設定</h3>
+      <table id="chapterTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>章名</th>
+            <th>デフォルト章</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="chapterTableBody">
+          <!-- JavaScriptで動的に生成 -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-group">
+      <h3>LINEアカウント設定</h3>
+      <table id="lineAccountTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>LINEアカウント名</th>
+            <th>デフォルト</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="lineAccountTableBody">
+          <!-- JavaScriptで動的に生成 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 返答タイトルタブ -->
+  <div id="titleTab" class="tabcontent">
+    <h2>返答タイトル</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addResponseTitle()">返答タイトルを追加</button>
+      <button class="create" onclick="saveResponseTitles()">保存</button>
+    </div>
+
+    <table id="responseTitleTable">
+      <thead>
+        <tr>
+          <th>返答タイトル</th>
+          <th>LINEアカウント</th>
+          <th>次章</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="responseTitleTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 返答条件タブ -->
+  <div id="conditionTab" class="tabcontent">
+    <h2>返答条件</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addResponseCondition()">返答条件を追加</button>
+      <button class="create" onclick="saveResponseConditions()">保存</button>
+    </div>
+
+    <table id="responseConditionTable">
+      <thead>
+        <tr>
+          <th>コード</th>
+          <th>章</th>
+          <th>優先度</th>
+          <th>登録状況</th>
+          <th>イベントタイプ</th>
+          <th>関数名</th>
+          <th>引数</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="responseConditionTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 返答内容タブ -->
+  <div id="contentTab" class="tabcontent">
+    <h2>返答内容</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addResponseContent()">返答内容を追加</button>
+      <button class="create" onclick="saveResponseContents()">保存</button>
+    </div>
+
+    <table id="responseContentTable">
+      <thead>
+        <tr>
+          <th>コード</th>
+          <th>返答タイトル</th>
+          <th>種別</th>
+          <th>詳細情報</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="responseContentTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+
+    <!-- 返答内容編集モーダル -->
+    <div id="responseContentModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeResponseContentModal()">&times;</span>
+        <h3>返答内容編集</h3>
+
+        <div class="form-group">
+          <label for="editContentCode">コード</label>
+          <input type="text" id="editContentCode" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="editContentTitle">返答タイトル</label>
+          <select id="editContentTitle" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="editContentType">種別</label>
+          <select id="editContentType" class="form-control" onchange="toggleContentFields()">
+            <option value="text">text</option>
+            <option value="buttons">buttons</option>
+            <option value="image">image</option>
+            <option value="sticker">sticker</option>
+            <option value="location">location</option>
+            <option value="imagemap">imagemap</option>
+            <option value="confirm">confirm</option>
+            <option value="image-carousel">image-carousel</option>
+            <option value="richmenu">richmenu</option>
+            <option value="flex">flex</option>
+            <option value="escape:pay">escape:pay</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="senderNameGroup">
+          <label for="editSenderName">送信者名</label>
+          <input type="text" id="editSenderName" class="form-control">
+        </div>
+
+        <div class="form-group" id="senderIconGroup">
+          <label for="editSenderIcon">送信者アイコン</label>
+          <input type="text" id="editSenderIcon" class="form-control" placeholder="Dropbox共有リンク">
+          <div id="senderIconPreview" class="image-preview"></div>
+        </div>
+
+        <div class="form-group" id="imageGroup">
+          <label for="editImage">画像</label>
+          <input type="text" id="editImage" class="form-control" placeholder="Dropbox共有リンク">
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
+
+        <div class="form-group" id="mainGroup">
+          <label for="editMain">メインテキスト</label>
+          <textarea id="editMain" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-group" id="sub1Group">
+          <label for="editSub1">サブテキスト1</label>
+          <input type="text" id="editSub1" class="form-control">
+        </div>
+
+        <div class="form-group" id="sub2Group">
+          <label for="editSub2">サブテキスト2</label>
+          <input type="text" id="editSub2" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="editOrder">順番</label>
+          <input type="number" id="editOrder" class="form-control" min="1" value="1">
+        </div>
+
+        <div class="form-group">
+          <label for="editLineAccount">LINEアカウント</label>
+          <select id="editLineAccount" class="form-control"></select>
+        </div>
+
+        <div class="btn-group">
+          <button class="create" onclick="saveResponseContentEdit()">保存</button>
+          <button class="action" onclick="closeResponseContentModal()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ボタン設定タブ -->
+  <div id="buttonTab" class="tabcontent">
+    <h2>ボタン設定</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addButtonSetting()">ボタンを追加</button>
+      <button class="create" onclick="saveButtonSettings()">保存</button>
+    </div>
+
+    <table id="buttonSettingTable">
+      <thead>
+        <tr>
+          <th>返答内容コード</th>
+          <th>種別</th>
+          <th>メイン1</th>
+          <th>詳細情報</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="buttonSettingTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+
+    <!-- ボタン設定編集モーダル -->
+    <div id="buttonSettingModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeButtonSettingModal()">&times;</span>
+        <h3>ボタン設定編集</h3>
+
+        <div class="form-group">
+          <label for="editButtonContentCode">返答内容コード</label>
+          <select id="editButtonContentCode" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="editButtonType">種別</label>
+          <select id="editButtonType" class="form-control" onchange="toggleButtonFields()">
+            <option value="postback">postback</option>
+            <option value="message">message</option>
+            <option value="image-carousel-message">image-carousel-message</option>
+            <option value="quickreply-message">quickreply-message</option>
+            <option value="uri">uri</option>
+            <option value="area-message">area-message</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="buttonImageGroup">
+          <label for="editButtonImage">画像</label>
+          <input type="text" id="editButtonImage" class="form-control" placeholder="Dropbox共有リンク">
+          <div id="buttonImagePreview" class="image-preview"></div>
+        </div>
+
+        <div class="form-group" id="buttonMain1Group">
+          <label for="editButtonMain1">メイン1</label>
+          <input type="text" id="editButtonMain1" class="form-control">
+        </div>
+
+        <div class="form-group" id="buttonMain2Group">
+          <label for="editButtonMain2">メイン2</label>
+          <input type="text" id="editButtonMain2" class="form-control">
+        </div>
+
+        <div class="form-group" id="buttonSub1Group">
+          <label for="editButtonSub1">サブ1</label>
+          <input type="text" id="editButtonSub1" class="form-control">
+        </div>
+
+        <div class="form-group" id="buttonSub2Group">
+          <label for="editButtonSub2">サブ2</label>
+          <input type="text" id="editButtonSub2" class="form-control">
+        </div>
+
+        <div class="form-group" id="buttonSub3Group">
+          <label for="editButtonSub3">サブ3</label>
+          <input type="text" id="editButtonSub3" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="editButtonOrder">順番</label>
+          <input type="number" id="editButtonOrder" class="form-control" min="1" value="1">
+        </div>
+
+        <div class="btn-group">
+          <button class="create" onclick="saveButtonSettingEdit()">保存</button>
+          <button class="action" onclick="closeButtonSettingModal()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フラグ条件タブ -->
+  <div id="flagConditionTab" class="tabcontent">
+    <h2>フラグ条件</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addFlagCondition()">フラグ条件を追加</button>
+      <button class="create" onclick="saveFlagConditions()">保存</button>
+    </div>
+
+    <table id="flagConditionTable">
+      <thead>
+        <tr>
+          <th>コード</th>
+          <th>フラグ条件</th>
+          <th>返答タイトル</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="flagConditionTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- フラグ変更タブ -->
+  <div id="flagChangeTab" class="tabcontent">
+    <h2>フラグ変更</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addFlagChange()">フラグ変更を追加</button>
+      <button class="create" onclick="saveFlagChanges()">保存</button>
+    </div>
+
+    <table id="flagChangeTable">
+      <thead>
+        <tr>
+          <th>コード</th>
+          <th>返答内容コード</th>
+          <th>フラグ名</th>
+          <th>操作</th>
+          <th>値</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="flagChangeTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 画像生成タブ -->
+  <div id="imageGenTab" class="tabcontent">
+    <h2>画像生成</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addImageGen()">画像生成を追加</button>
+      <button class="create" onclick="saveImageGens()">保存</button>
+    </div>
+
+    <table id="imageGenTable">
+      <thead>
+        <tr>
+          <th>画像コード</th>
+          <th>ベース画像</th>
+          <th>説明</th>
+          <th>プレビュー</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="imageGenTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 変数タブ -->
+  <div id="variableTab" class="tabcontent">
+    <h2>変数</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addVariable()">変数を追加</button>
+      <button class="create" onclick="saveVariables()">保存</button>
+    </div>
+
+    <table id="variableTable">
+      <thead>
+        <tr>
+          <th>変数名</th>
+          <th>初期値</th>
+          <th>説明</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="variableTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- スクリプトタブ -->
+  <div id="scriptTab" class="tabcontent">
+    <h2>スクリプト</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addScript()">スクリプトを追加</button>
+      <button class="create" onclick="saveScripts()">保存</button>
+    </div>
+
+    <table id="scriptTable">
+      <thead>
+        <tr>
+          <th>スクリプト名</th>
+          <th>内容</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="scriptTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- トロフィタブ -->
+  <div id="trophyTab" class="tabcontent">
+    <h2>トロフィ</h2>
+
+    <div class="btn-group">
+      <button class="action" onclick="addTrophy()">トロフィを追加</button>
+      <button class="create" onclick="saveTrophies()">保存</button>
+    </div>
+
+    <table id="trophyTable">
+      <thead>
+        <tr>
+          <th>トロフィID</th>
+          <th>名前</th>
+          <th>条件</th>
+          <th>画像</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="trophyTableBody">
+        <!-- JavaScriptで動的に生成 -->
+      </tbody>
+    </table>
+
+    <!-- トロフィ編集モーダル -->
+    <div id="trophyModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeTrophyModal()">&times;</span>
+        <h3>トロフィ編集</h3>
+
+        <div class="form-group">
+          <label for="editTrophyId">トロフィID</label>
+          <input type="text" id="editTrophyId" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="editTrophyName">名前</label>
+          <input type="text" id="editTrophyName" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="editTrophyCondition">獲得条件</label>
+          <textarea id="editTrophyCondition" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editTrophyImage">画像URL</label>
+          <input type="text" id="editTrophyImage" class="form-control" placeholder="Dropbox共有リンク">
+          <div id="trophyImagePreview" class="image-preview"></div>
+        </div>
+
+        <div class="btn-group">
+          <button class="create" onclick="saveTrophyEdit()">保存</button>
+          <button class="action" onclick="closeTrophyModal()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 画像プレビュー拡大モーダル -->
+  <div id="imagePreviewModal">
+    <span class="close" onclick="closeImagePreview()">&times;</span>
+    <img id="previewExpandedImg">
+  </div>
+
+  <script>
+    /**
+     * 初期化処理
+     */
+    function init() {
+      // デフォルトタブを開く
+      document.getElementById("defaultOpen").click();
+
+      // データの読み込み
+      loadData();
+
+      // イベントリスナーの設定
+      setupEventListeners();
+    }
+
+    /**
+     * データの読み込み
+     * @return {void}
+     */
+    function loadData() {
+      try {
+        // スプレッドシートからデータを取得
+        google.script.run
+          .withSuccessHandler(function (data) {
+            // データをUIに表示
+            displayData(data);
+          })
+          .withFailureHandler(function (error) {
+            showAlert('データの読み込みに失敗しました: ' + error, 'danger');
+          })
+          .getData();
+      } catch (e) {
+        let message = "データの読み込みに失敗しました。\n";
+        message += "管理者にお問い合わせください。\n";
+        message += e;
+        showAlert(message, 'danger');
+      }
+    }
+
+    /**
+     * イベントリスナーの設定
+     * @return {void}
+     */
+    function setupEventListeners() {
+      // フォーム送信イベントのリスナー設定
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          submitForm(this);
+        });
+      });
+
+      // 種別選択による表示/非表示の動的制御
+      const typeSelects = document.querySelectorAll('.type-select');
+      typeSelects.forEach(select => {
+        select.addEventListener('change', function () {
+          updateFieldsVisibility(this);
+        });
+      });
+    }
+
+    /**
+     * フォーム送信処理
+     * @param {HTMLFormElement} form - 送信するフォーム要素
+     * @return {void}
+     */
+    function submitForm(form) {
+      try {
+        const formData = new FormData(form);
+        const data = {};
+
+        for (const [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            showAlert('データを保存しました', 'success');
+            loadData(); // 再読み込み
+          })
+          .withFailureHandler(function (error) {
+            showAlert('データの保存に失敗しました: ' + error, 'danger');
+          })
+          .saveData(data);
+      } catch (e) {
+        let message = "データの保存中にエラーが発生しました。\n";
+        message += "管理者にお問い合わせください。\n";
+        message += e;
+        showAlert(message, 'danger');
+      }
+    }
+
+    /**
+     * タブを切り替える
+     * @param {Event} evt - イベントオブジェクト
+     * @param {string} tabName - 開くタブのID
+     * @return {void}
+     */
+    function openTab(evt, tabName) {
+      // タブコンテンツをすべて非表示
+      const tabcontent = document.getElementsByClassName("tabcontent");
+      for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+
+      // タブボタンからactiveクラスを削除
+      const tablinks = document.getElementsByClassName("tablinks");
+      for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+
+      // 選択されたタブを表示し、ボタンにactiveクラスを追加
+      document.getElementById(tabName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+
+    /**
+     * アラートメッセージを表示
+     * @param {string} message - 表示するメッセージ
+     * @param {string} type - アラートタイプ（success, danger, info）
+     * @return {void}
+     */
+    function showAlert(message, type) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.innerText = message;
+
+      const container = document.querySelector('.container');
+      container.insertBefore(alertDiv, container.firstChild);
+
+      // 5秒後に自動的に消える
+      setTimeout(function () {
+        alertDiv.remove();
+      }, 5000);
+    }
+
+    /**
+     * 種別に応じてフィールドの表示/非表示を切り替える
+     * @param {HTMLSelectElement} selectElement - 種別選択要素
+     * @return {void}
+     */
+    function updateFieldsVisibility(selectElement) {
+      const selectedValue = selectElement.value;
+      const form = selectElement.closest('form');
+
+      // すべてのフィールドグループを非表示
+      const fieldGroups = form.querySelectorAll('.field-group');
+      fieldGroups.forEach(group => {
+        group.classList.add('hidden');
+      });
+
+      // 選択された種別に関連するフィールドグループを表示
+      const relatedGroups = form.querySelectorAll(`.field-group[data-type="${selectedValue}"], .field-group[data-type="common"]`);
+      relatedGroups.forEach(group => {
+        group.classList.remove('hidden');
+      });
+    }
+
+    // ページロード時に初期化
+    window.onload = init;
+  </script>
+</body>
+
+</html>
